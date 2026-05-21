@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GURU CERDAS - PERFECT PRINT FIX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link class="no-print" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        *, body, html, select, button, input, textarea, table, th, td, div, p, span, a, h1, h2, h3, h4, h5, h6 {
+            font-family: 'Tahoma', 'Geneva', 'Verdana', sans-serif !important;
+        }
+        .ambient-glow-1 {
+            background: radial-gradient(circle, rgba(249, 115, 22, 0.15) 0%, transparent 70%);
+        }
+        .ambient-glow-2 {
+            background: radial-gradient(circle, rgba(251, 146, 60, 0.12) 0%, transparent 70%);
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .print-paper {
+            background-color: #ffffff;
+            color: #000000;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+        }
+        
+        @media print {
+            @page {
+                size: auto;
+                margin: 20mm 15mm 20mm 15mm;
+            }
+            body { 
+                background: #ffffff !important; 
+                color: #000000 !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                display: block !important;
+            }
+            .no-print { 
+                display: none !important; 
+            }
+            .paper-wrapper { 
+                border: none !important; 
+                box-shadow: none !important; 
+                background: transparent !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+            }
+            .print-paper { 
+                box-shadow: none !important; 
+                border: none !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                display: block !important;
+            }
+            
+            body.print-soal-only #paper-soal-view { 
+                display: block !important; 
+            }
+            body.print-soal-only #paper-kisi-view, 
+            body.print-soal-only #paper-kunci-view { 
+                display: none !important; 
+            }
+            
+            body.print-kisi-only #paper-kisi-view { 
+                display: block !important; 
+            }
+            body.print-kisi-only #paper-soal-view, 
+            body.print-kisi-only #paper-kunci-view { 
+                display: none !important; 
+            }
+
+            body.print-kunci-only #paper-kunci-view {
+                display: block !important;
+            }
+            body.print-kunci-only #paper-soal-view,
+            body.print-kunci-only #paper-kisi-view {
+                display: none !important;
+            }
+
+            table {
+                page-break-inside: auto !important;
+            }
+            tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto !important;
+            }
+            thead {
+                display: table-header-group !important;
+            }
+
+            .container-ttd {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                display: block !important;
+                margin-top: 30px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen relative overflow-x-hidden">
+
+    <div class="absolute top-0 left-1/4 w-[300px] md:w-[600px] h-[300px] md:h-[600px] ambient-glow-1 pointer-events-none -z-10 rounded-full no-print"></div>
+    <div class="absolute bottom-10 right-1/4 w-[250px] md:w-[500px] h-[250px] md:h-[500px] ambient-glow-2 pointer-events-none -z-10 rounded-full no-print"></div>
+
+    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 flex items-center gap-3 bg-slate-900 border border-emerald-500/30 text-emerald-400 px-5 py-3 rounded-xl shadow-2xl glass-panel no-print">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-xl"></i>
+        <span id="toast-message" class="text-sm font-semibold">Tindakan Berhasil!</span>
+    </div>
+
+    <!-- WELCOME SCREEN -->
+    <div id="welcome-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col justify-center items-center px-4 transition-all duration-700 no-print">
+        <div class="max-w-2xl text-center flex flex-col items-center">
+            <div class="mb-8">
+                <img src="https://i.ibb.co.com/GQ9Zxrsv/jecko.png"alt="Foto Welcome" class="w-32 h-32 md:w-40 md:h-40 object-cover rounded-3xl shadow-[0_0_20px_rgba(249,115,22,0.4)] border-2 border-orange-500/50">
+            </div>
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">GURU CERDAS</h1>
+            <p class="text-slate-400 text-base md:text-xl mb-10 max-w-lg leading-relaxed">
+                Platform digital mandiri yang Dibuat untuk Membantu Pekerjaan Guru.
+            </p>
+            <button onclick="startApp()" class="w-full sm:w-auto px-8 py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl shadow-lg transition transform hover:scale-105">
+                Mulai Aplikasi <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+        <div class="absolute bottom-6 text-slate-500 text-xs font-medium tracking-wide text-center px-4">
+            Copyright © 2026 by Jecko_Tucunan
+        </div>
+    </div>
+
+    <!-- MAIN HEADER (SINKRONISASI SEJAJAR DENGAN INFORMATIKA) -->
+    <header id="main-header" class="hidden no-print sticky top-0 z-40 border-b border-orange-500 bg-orange-500 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-3 md:py-0 md:h-16 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
+            
+            <div class="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-slate-950 flex items-center justify-center text-orange-500 font-black text-xl flex-shrink-0 shadow-md">G</div>
+                    <div>
+                        <span class="font-extrabold text-base md:text-lg text-slate-950 block leading-tight">Guru Cerdas</span>
+                        <span class="block text-xs text-slate-900 font-medium">Jakson Tucunan, ST</span>
+                    </div>
+                </div>
+                <!-- BADGE LABEL MAPEL BARU SEJAJAR -->
+                <div class="ml-2 md:ml-4 px-2.5 py-1 bg-slate-950 rounded-md text-[10px] md:text-xs text-orange-400 font-black tracking-widest uppercase shadow">
+                    INFORMATIKA
+                </div>
+            </div>
+
+            <nav class="flex w-full md:w-auto overflow-x-auto no-scrollbar gap-1 bg-orange-600/50 p-1 rounded-lg border border-orange-600">
+                <button id="nav-btn-asesmen" onclick="switchTab('asesmen')" class="flex-1 md:flex-none whitespace-nowrap px-3 md:px-4 py-2 rounded-md font-bold text-xs md:text-sm bg-slate-950 text-orange-500 shadow">Asesmen</button>
+                <button id="nav-btn-modul" onclick="switchTab('modul')" class="flex-1 md:flex-none whitespace-nowrap px-3 md:px-4 py-2 rounded-md font-bold text-xs md:text-sm text-orange-100 hover:text-white">Modul Ajar</button>
+                <button id="nav-btn-input-soal" onclick="switchTab('input-soal')" class="flex-1 md:flex-none whitespace-nowrap px-3 md:px-4 py-2 rounded-md font-bold text-xs md:text-sm text-orange-100 hover:text-white">Tambah Bank Soal</button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="app-container" class="hidden max-w-7xl mx-auto px-4 py-6 md:py-8">
+        <!-- TAB ASESMEN -->
+        <div id="tab-asesmen-content" class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+            
+            <!-- PANEL PARAMETER (KIRI) -->
+            <div class="lg:col-span-4 flex flex-col gap-6 no-print">
+                <div class="bg-slate-900/90 backdrop-blur-xl p-4 md:p-6 rounded-2xl flex flex-col gap-4 border border-orange-500/30 shadow-xl shadow-orange-950/10">
+                    <h3 class="text-base md:text-lg font-bold text-white border-b border-slate-800 pb-2"><i class="fa-solid fa-sliders text-orange-500 mr-2"></i>Pengaturan Asesmen</h3>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-semibold text-slate-300">Nama Satuan Pendidikan (Sekolah):</label>
+                        <input type="text" id="input-nama-sekolah" oninput="updateIdentitasSekolah()" value="SMK NEGERI 1 HALMAHERA UTARA" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 w-full font-semibold transition">
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-semibold text-slate-300">Alamat Lengkap Sekolah:</label>
+                        <input type="text" id="input-alamat-sekolah" oninput="updateIdentitasSekolah()" value="Jalan Utama Trans Halmahera, Kabupaten Halmahera Utara, Maluku Utara" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 w-full transition">
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-semibold text-slate-300">Nama Guru Mata Pelajaran:</label>
+                        <input type="text" id="input-nama-guru" oninput="updateIdentitasSekolah()" value="Jakson Tucunan, A.Md.,ST" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-orange-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 w-full font-semibold transition">
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-semibold text-slate-300">Nomor Induk Pegawai (NIP):</label>
+                        <input type="text" id="input-nip-guru" oninput="updateIdentitasSekolah()" value="19880412 201503 1 002" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 w-full font-semibold tracking-wider transition">
+                    </div>
+
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-semibold text-slate-300">Tanggal Pembuatan Soal:</label>
+                        <input type="date" id="input-tanggal-buat" onchange="updateIdentitasSekolah()" value="2026-05-20" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 w-full font-semibold transition">
+                    </div>
+
+                    <div class="flex flex-col gap-2 mt-1">
+                        <label class="text-sm font-semibold text-slate-300">Pilih Topik / Elemen Pembelajaran:</label>
+                        <div class="flex flex-col gap-2 bg-orange-500/5 p-3 border border-orange-500/10 rounded-xl">
+                            <label class="flex items-center gap-2.5 cursor-pointer group">
+                                <input type="checkbox" name="f-elemen" value="Berpikir Komputasional" checked class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800 focus:ring-orange-500/30">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">Berpikir Komputasional (BK)</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer group">
+                                <input type="checkbox" name="f-elemen" value="Sistem Komputer" class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800 focus:ring-orange-500/30">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">Sistem Komputer (SK)</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer group">
+                                <input type="checkbox" name="f-elemen" value="Jaringan Komputer dan Internet" class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800 focus:ring-orange-500/30">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">Jaringan Komputer & Internet (JKI)</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer group">
+                                <input type="checkbox" name="f-elemen" value="Algoritma dan Pemrograman" class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800 focus:ring-orange-500/30">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">Algoritma & Pemrograman (AP)</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer group">
+                                <input type="checkbox" name="f-elemen" value="Keamanan Informasi" class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800 focus:ring-orange-500/30">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">Keamanan Informasi (KI)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-semibold text-slate-300">Tipe Soal:</label>
+                        <select id="filter-tipe" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-orange-500 w-full transition">
+                            <option value="semua">Semua (Campuran PG, PGK & Essay)</option>
+                            <option value="pg">Hanya Pilihan Ganda Tunggal (PG)</option>
+                            <option value="pgk">Hanya Pilihan Ganda Kompleks (PGK)</option>
+                            <option value="essay">Hanya Essay / Uraian</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-semibold text-slate-300">Pilih Tingkat Kesukaran (Bloom):</label>
+                        <div class="grid grid-cols-2 gap-2 bg-orange-500/5 p-3 border border-orange-500/10 rounded-xl">
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="checkbox" name="f-level" value="C1" class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">C1 (Mengingat)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="checkbox" name="f-level" value="C2" checked class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">C2 (Memahami)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="checkbox" name="f-level" value="C3" class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">C3 (Menerapkan)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="checkbox" name="f-level" value="C4" checked class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">C4 (Menganalisis)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="checkbox" name="f-level" value="C5" class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">C5 (Mengevaluasi)</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="checkbox" name="f-level" value="C6" class="w-4 h-4 rounded text-orange-600 bg-slate-950 border-slate-800">
+                                <span class="text-xs text-slate-300 group-hover:text-orange-400 transition">C6 (Menciptakan)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 bg-slate-950 p-2.5 border border-slate-850 rounded-xl">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] font-bold text-slate-400">Minta PG:</label>
+                            <input type="number" id="filter-jumlah-pg" value="5" min="0" max="25" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-orange-500 w-full">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] font-bold text-slate-400">Minta PGK:</label>
+                            <input type="number" id="filter-jumlah-pgk" value="3" min="0" max="25" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-orange-500 w-full">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] font-bold text-slate-400">Minta Essay:</label>
+                            <input type="number" id="filter-jumlah-essay" value="2" min="0" max="15" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-orange-500 w-full">
+                        </div>
+                    </div>
+
+                    <button onclick="prosesMulaiBuatSoal()" class="w-full mt-1 py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-orange-600/20">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Paket Soal
+                    </button>
+                </div>
+            </div>
+
+            <!-- AREA PREVIEW & TOMBOL CETAK (KANAN) -->
+            <div class="lg:col-span-8 flex flex-col gap-4 w-full min-w-0">
+                <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row gap-4 items-center no-print">
+                    <div class="flex w-full sm:w-auto gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 overflow-x-auto">
+                        <button id="preview-tab-soal" onclick="switchPreviewTab('soal')" class="flex-1 sm:flex-none text-center whitespace-nowrap px-3 py-2 rounded-md font-semibold text-xs bg-slate-800 text-white">Lembar Soal</button>
+                        <button id="preview-tab-kisi" onclick="switchPreviewTab('kisi')" class="flex-1 sm:flex-none text-center whitespace-nowrap px-3 py-2 rounded-md font-semibold text-xs text-slate-400">Kisi-Kisi</button>
+                        <button id="preview-tab-kunci" onclick="switchPreviewTab('kunci')" class="flex-1 sm:flex-none text-center whitespace-nowrap px-3 py-2 rounded-md font-semibold text-xs text-slate-400">Kunci Jawaban</button>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto sm:ml-auto">
+                        <button onclick="cetakSoalPDF()" class="w-full sm:w-auto px-3 py-2 bg-emerald-600 text-xs font-bold rounded-xl text-white flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-file-pdf"></i> Cetak Lembar Soal
+                        </button>
+                        <button onclick="cetakKisiPDF()" class="w-full sm:w-auto px-3 py-2 bg-teal-600 text-xs font-bold rounded-xl text-white flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-table-cells"></i> Cetak Kisi-Kisi
+                        </button>
+                        <button onclick="cetakKunciPDF()" class="w-full sm:w-auto px-3 py-2 bg-orange-600 text-xs font-bold rounded-xl text-white flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-key"></i> Cetak Kunci Jawaban
+                        </button>
+                    </div>
+                </div>
+
+                <div class="paper-wrapper rounded-2xl overflow-hidden border border-slate-800 w-full">
+                    <!-- Lembar Soal -->
+                    <div id="paper-soal-view" class="print-paper p-4 sm:p-10 min-h-0 md:min-h-[842px] overflow-x-auto">
+                        <div class="flex items-center justify-between border-b-[4px] border-double border-black pb-4 mb-6 text-black gap-2 md:gap-4 min-w-[600px] sm:min-w-0">
+                            <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center flex-shrink-0">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo-Tut-Wuri-Handayani-PNG-Warna.png" alt="Logo Tut Wuri" class="w-full h-full object-contain">
+                            </div>
+                            <div class="flex-1 text-center">
+                                <h4 class="text-[10px] md:text-sm font-bold tracking-wider leading-tight m-0">PEMERINTAH PROVINSI MALUKU UTARA</h4>
+                                <h4 class="text-[10px] md:text-sm font-bold tracking-wider leading-tight m-0 mt-0.5">DINAS PENDIDIKAN DAN KEBUDAYAAN</h4>
+                                <h3 id="render-sekolah-soal" class="text-xs md:text-base font-extrabold leading-tight uppercase mt-1">SMK NEGERI 1 HALMAHERA UTARA</h3>
+                                <h3 class="text-xs md:text-sm font-bold tracking-wide uppercase m-0 mt-1 text-black">MATA PELAJARAN: INFORMATIKA</h3>
+                                <p id="render-alamat-soal" class="text-[8px] md:text-[10px] italic m-0 mt-1 font-medium text-slate-700 leading-snug">Jalan Utama Trans Halmahera, Kabupaten Halmahera Utara, Maluku Utara</p>
+                            </div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center flex-shrink-0">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Coat_of_arms_of_North_Maluku.svg/960px-Coat_of_arms_of_North_Maluku.svg.png" alt="Logo Maluku Utara" class="w-full h-full object-contain">
+                            </div>
+                        </div>
+
+                        <div id="lembar-soal-render" class="text-black text-xs md:text-sm space-y-6 pt-2">
+                            <p class="text-center text-slate-400 py-20">Atur parameter kesukaran lalu klik tombol Generate.</p>
+                        </div>
+                    </div>
+
+                    <!-- Kisi Kisi -->
+                    <div id="paper-kisi-view" class="print-paper p-4 sm:p-8 min-h-0 md:min-h-[842px]" style="display: none;">
+                        <div class="w-full overflow-x-auto">
+                            <div id="kisi-printable-area" class="min-w-[750px] sm:min-w-0">
+                                <div class="flex items-center justify-between border-b-[4px] border-double border-black pb-4 mb-6 text-black gap-4" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 4px double black; padding-bottom: 16px; margin-bottom: 24px;">
+                                    <div style="width: 50px; height: 50px;">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo-Tut-Wuri-Handayani-PNG-Warna.png" alt="Logo Tut Wuri" style="width: 100%; height: 100%; object-fit: contain;">
+                                    </div>
+                                    <div style="flex: 1; text-align: center; color: black;">
+                                        <h4 style="font-size: 11px; font-weight: bold; letter-spacing: 0.05em; line-height: 1.25; margin: 0;">PEMERINTAH PROVINSI MALUKU UTARA</h4>
+                                        <h4 style="font-size: 11px; font-weight: bold; letter-spacing: 0.05em; line-height: 1.25; margin: 2px 0 0 0;">DINAS PENDIDIKAN DAN KEBUDAYAAN</h4>
+                                        <h3 id="render-sekolah-kisi" style="font-size: 13px; font-weight: 800; line-height: 1.25; text-transform: uppercase; margin: 4px 0 0 0;">SMK NEGERI 1 HALMAHERA UTARA</h3>
+                                        <h4 style="font-size: 11px; font-weight: bold; text-transform: uppercase; margin: 2px 0 0 0; color: black;">MATA PELAJARAN: INFORMATIKA</h4>
+                                        <p id="render-alamat-kisi" style="font-size: 9px; font-style: italic; margin: 4px 0 0 0; font-weight: 500; color: #374151; line-height: 1.25;">Jalan Utama Trans Halmahera, Kabupaten Halmahera Utara, Maluku Utara</p>
+                                    </div>
+                                    <div style="width: 50px; height: 50px;">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Coat_of_arms_of_North_Maluku.svg/960px-Coat_of_arms_of_North_Maluku.svg.png" alt="Logo Maluku Utara" style="width: 100%; height: 100%; object-fit: contain;">
+                                    </div>
+                                </div>
+
+                                <div style="text-align: center; color: black; margin-bottom: 16px;">
+                                    <h3 style="font-size: 12px; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">KISI-KISI INSTRUMEN EVALUASI ASESMEN</h3>
+                                    <p style="font-size: 9px; margin: 2px 0 0 0; font-style: italic; color: #4b5563;">Struktur Capaian Pembelajaran Kurikulum Merdeka (Fase E)</p>
+                                </div>
+
+                                <table class="w-full text-black border border-black border-collapse text-[10px] md:text-[11px]" style="table-layout: fixed; width: 100%; border: 1px solid black; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background-color: #f3f4f6;">
+                                            <th style="border: 1px solid black; padding: 6px; text-align: center; font-weight: bold; width: 5%;">No</th>
+                                            <th style="border: 1px solid black; padding: 6px; text-align: left; font-weight: bold; width: 15%;">Elemen</th>
+                                            <th style="border: 1px solid black; padding: 6px; text-align: left; font-weight: bold; width: 25%;">Tujuan Pembelajaran (TP)</th>
+                                            <th style="border: 1px solid black; padding: 6px; text-align: left; font-weight: bold; width: 15%;">Lingkup Materi</th>
+                                            <th style="border: 1px solid black; padding: 6px; text-align: left; font-weight: bold; width: 25%;">Indikator Soal</th>
+                                            <th style="border: 1px solid black; padding: 6px; text-align: center; font-weight: bold; width: 7%;">Level</th>
+                                            <th style="border: 1px solid black; padding: 6px; text-align: center; font-weight: bold; width: 8%;">Bentuk</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabel-kisi-render"></tbody>
+                                </table>
+
+                                <div class="container-ttd" style="margin-top: 35px; width: 100%; display: block; page-break-inside: avoid !important; break-inside: avoid !important;">
+                                    <table style="border: none !important; width: auto; min-width: 240px; margin-left: auto; margin-right: 10px; border-collapse: collapse; float: right;">
+                                        <tbody>
+                                            <tr style="border: none !important;">
+                                                <td style="border: none !important; padding: 0 0 4px 0; text-align: left; color: black; font-size: 11px;" id="render-tanggal-kisi">Tobelo, 20 Mei 2026</td>
+                                            </tr>
+                                            <tr style="border: none !important;">
+                                                <td style="border: none !important; padding: 0 0 55px 0; text-align: left; color: black; font-size: 11px;">Guru Mata Pelajaran,</td>
+                                            </tr>
+                                            <tr style="border: none !important;">
+                                                <td style="border: none !important; padding: 0 0 2px 0; font-weight: bold; text-decoration: underline; text-align: left; color: black; font-size: 11px;" id="render-nama-guru-kisi">Jakson Tucunan, A.Md.,ST</td>
+                                            </tr>
+                                            <tr style="border: none !important;">
+                                                <td style="border: none !important; padding: 0; text-align: left; color: black; font-size: 11px;">
+                                                    NIP. <span id="render-nip-guru-kisi">19880412 201503 1 002</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div style="clear: both;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kunci Jawaban -->
+                    <div id="paper-kunci-view" class="print-paper p-4 sm:p-10 min-h-0 md:min-h-[842px]">
+                        <h4 class="text-black font-bold border-b pb-2 mb-4 uppercase tracking-wide text-xs md:text-sm">KUNCI JAWABAN & RUBRIK PENILAIAN (RAHASIA GURU)</h4>
+                        <div id="lembar-kunci-render" class="text-black text-xs space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB MODUL AJAR -->
+        <div id="tab-modul-content" class="hidden">
+            <div class="glass-panel p-6 md:p-8 rounded-2xl text-center">
+                <i class="fa-solid fa-folder-open text-3xl md:text-4xl text-orange-400 mb-3"></i>
+                <h3 class="text-lg md:text-xl font-bold text-white mb-1">Modul Ajar Kurikulum Merdeka</h3>
+                <p class="text-slate-400 text-xs md:text-sm">Fitur penyusunan modul ajar otomatis sedang dalam pengembangan.</p>
+            </div>
+        </div>
+
+        <!-- TAB TAMBAH BANK SOAL -->
+        <div id="tab-input-soal-content" class="hidden">
+            <div class="glass-panel p-6 md:p-8 rounded-2xl text-center">
+                <i class="fa-solid fa-database text-3xl md:text-4xl text-orange-400 mb-3"></i>
+                <h3 class="text-lg md:text-xl font-bold text-white mb-1">Tambah Data Bank Soal</h3>
+                <p class="text-slate-400 text-xs md:text-sm">Fitur manajemen database soal custom sedang dalam pengembangan.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const blueprintBloom = {
+            "Berpikir Komputasional": {
+                "C1": { materi: "Fondasi Komputasi", tp: "Peserta didik mampu menyebutkan fondasi utama berpikir komputasional.", ind: "Peserta didik dapat mengidentifikasi pilar utama struktur logika komputer.", tipe: "pg", pert: "Metode penyelesaian masalah dengan memecah komponen besar menjadi bagian mikro terkecil disebut pilar...", pil: ["A. Abstraksi", "B. Dekomposisi", "C. Algoritma", "D. Pengenalan Pola", "E. Pemrograman Sistem"], kun: "B", pert_es: "Sebutkan 4 fondasi utama berpikir komputasional!", kun_es: "Dekomposisi, Abstraksi, Pengenalan Pola, Algoritma.", pert_pgk: "Manakah yang termasuk ke dalam 4 pilar utama dalam konsep Berpikir Komputasional?", pil_pgk: ["A. Dekomposisi", "B. Enkapsulasi", "C. Pengenalan Pola", "D. Inheritance", "E. Abstraksi Logika"], kun_pgk: "A, C, E" },
+                "C2": { materi: "Struktur Data", tp: "Peserta didik mampu menjelaskan karakteristik struktur data linear standar.", ind: "Disajikan dua istilah penyimpanan, peserta didik dapat menjelaskan perbedaan karakteristik penampungan data pada Stack dan Queue.", tipe: "pg", pert: "Prinsip penampungan data di mana elemen yang paling terakhir masuk akan keluar pertama kali disebut...", pil: ["A. FIFO", "B. LIFO", "C. Searching", "D. Sorting", "E. Hashing"], kun: "B", pert_es: "Jelaskan prinsip kerja tumpukan (Stack) komputer!", kun_es: "Prinsip LIFO (Last In First Out), data terakhir masuk keluar pertama.", pert_pgk: "Tentukan pernyataan yang BENAR mengenai perbedaan struktur data Antrean (Queue) dan Tumpukan (Stack)!", pil_pgk: ["A. Queue menerapkan sistem FIFO", "B. Stack menerapkan sistem LIFO", "C. Queue dan Stack memiliki struktur identik", "D. Data Stack diambil dari elemen paling awal", "E. Queue digunakan dalam manajemen prosesor scheduling"], kun_pgk: "A, B, E" },
+                "C3": { materi: "Algoritma Pencarian", tp: "Peserta didik mampu menerapkan metode pencarian data (searching) secara terurut.", ind: "Disajikan studi kasus penataan berkas fisik, peserta didik dapat mengaplikasikan langkah algoritma pencarian linear.", tipe: "pg", pert: "Mekanisme pencarian data yang memeriksa data satu per satu secara berurutan dari awal sampai akhir disebut...", pil: ["A. Binary Search", "B. Linear Search", "C. Bubble Sort", "D. Selection Sort", "E. Insertion Sort"], kun: "B", pert_es: "Gambarkan bagaimana pilar berpikir algoritma diterapkan saat Anda melakukan pencarian sebuah berkas dokumen nama siswa di dalam tumpukan map arsip fisik sekolah!", kun_es: "Menyusun langkah terurut: mengambil satu map, mencocokkan nama, jika tidak cocok lanjut ke map berikutnya hingga selesai.", pert_pgk: "Manakah kondisi di bawah ini yang paling efektif diselesaikan menggunakan metode Binary Search?", pil_pgk: ["A. Data numerik acak", "B. Kumpulan data yang sudah terurut naik", "C. Pencarian data berukuran raksasa teratur", "D. Data string satu elemen tunggal", "E. Deret alfabet urutan menurun"], kun_pgk: "B, C, E" },
+                "C4": { materi: "Dekomposisi Masalah", tp: "Peserta didik mampu menganalisis taktik pemecahan masalah dekomposisi pada sistem digital.", ind: "Disajikan narasi proyek sistem sekolah, peserta didik dapat menganalisis dan merinci pecahan komponen mikro sub-sistem.", tipe: "pg", pert: "Lakukan analisis dekomposisi pada sistem aplikasi presensi kehadiran online SMK Negeri 1 Halut. Bagian mikro apa saja yang harus dibuat oleh programmer?", pil: ["A. Modul input kamera", "B. Printer", "C. Mouse", "D. Keyboard", "E. Speaker Aktif"], kun: "A", pert_es: "Lakukan analisis dekomposisi pada sistem aplikasi presensi kehadiran online SMK Negeri 1 Halut. Bagian mikro apa saja yang harus dibuat oleh programmer?", kun_es: "Analisis mikro: Modul input kamera (face recognition), modul pengunci koordinat lokasi (GPS), dan database rekapitulasi data bulanan.", pert_pgk: "Programmer ditugaskan mendekomposisi sistem E-Rapor SMK Negeri 1 Halut. Komponen mikro fungsional mana saja yang WAJIB dirancang?", pil_pgk: ["A. Modul kalkulasi nilai akhir", "B. Sistem input presensi siswa", "C. Sistem overclocking RAM server", "D. Driver printer eksternal bioskop", "E. Modul cetak ledger raport"], kun_pgk: "A, B, E" },
+                "C5": { materi: "Algoritma Pengurutan", tp: "Peserta didik mampu mengevaluasi tingkat efisiensi algoritma pengurutan (sorting) data.", ind: "Disajikan parameter volume data berskala besar, peserta didik dapat mengevaluasi kelemahan performa metode Bubble Sort.", tipe: "pg", pert: "Algoritma sorting yang melakukan penukaran data secara terus menerus ke elemen sebelahnya hingga terurut adalah...", pil: ["A. Quick Sort", "B. Merge Sort", "C. Bubble Sort", "D. Insertion Sort", "E. Shell Sort"], kun: "C", pert_es: "Evaluasilah kelemahan algoritma pengurutan Bubble Sort jika digunakan untuk mengurutkan data nilai ujian ribuan siswa di kabupaten Halmahera Utara!", kun_es: "Bubble Sort sangat lambat untuk data bervolume besar karena memiliki kompleksitas waktu yang tidak efisien akibat proses tukar data berulang.", pert_pgk: "Berdasarkan analisis efisiensi kompleksitas waktu, algoritma pengurutan manakah yang paling direkomendasikan untuk big data?", pil_pgk: ["A. Quick Sort", "B. Bubble Sort", "C. Merge Sort", "D. Selection Sort", "E. Heap Sort"], kun_pgk: "A, C, E" },
+                "C6": { materi: "Rekayasa Pemecahan Masalah", tp: "Peserta didik mampu merancang langkah solusi penanganan kegagalan sistem komputasi.", ind: "Disajikan skenario serangan siber, peserta didik dapat merancang konsep alur penyelematan data yang komprehensif.", tipe: "pg", pert: "Rancanglah sebuah bagan alur konsep berpikir komputasional terstruktur untuk mendeteksi secara dini komputer lab sekolah yang tiba-tiba mati total akibat serangan malware!", pil: ["A. Isolasi port jaringan LAN", "B. Beli monitor baru", "C. Ganti mouse", "D. Bersihkan debu", "E. Restart paksa tanpa instal ulang"], kun: "A", pert_es: "Rancanglah sebuah bagan alur konsep berpikir komputasional terstruktur untuk mendeteksi secara dini komputer lab sekolah yang tiba-tiba mati total akibat serangan malware!", kun_es: "Siswa merumuskan solusi komparatif: Melakukan isolasi port jaringan LAN, mengecek integritas file bootloader, dan menyusun langkah recovery backup.", pert_pgk: "Sebagai pengelola Lab Komputer SMK, Anda mendeteksi infeksi ransomware. Rancanglah kombinasi tindakan darurat awal yang paling logis!", pil_pgk: ["A. Memutus koneksi kabel jaringan/LAN", "B. Melakukan format menyeluruh berkas backup offline", "C. Mematikan daya komputer yang terinfeksi", "D. Menghapus antivirus lokal", "E. Memblokir IP address eksternal pada router firewall"], kun_pgk: "A, C, E" }
+            },
+            "Sistem Komputer": {
+                "C1": { materi: "Arsitektur Komputer", tp: "Peserta didik mampu mengidentifikasi komponen penyusun unit pemrosesan pusat.", ind: "Peserta didik dapat menyebutkan bagian-bagian internal yang menyusun arsitektur pemroses komputer.", tipe: "pg", pert: "Komponen internal CPU yang bertugas melakukan operasi perhitungan aritmatika dan logika matematika adalah...", pil: ["A. Control Unit", "B. Register Memory", "C. Arithmatic Logic Unit (ALU)", "D. RAM", "E. Power Supply"], kun: "C", pert_es: "Sebutkan 3 komponen utama yang harus ada di dalam arsitektur unit pemrosesan pusat (CPU) komputer!", kun_es: "1. Arithmatic Logic Unit (ALU), 2. Control Unit (CU), 3. Register Internal Memori.", pert_pgk: "Manakah di bawah ini yang merupakan komponen internal utama penyusun sebuah CPU (Central Processing Unit)?", pil_pgk: ["A. Control Unit (CU)", "B. RAM Eksternal", "C. Arithmetic Logic Unit (ALU)", "D. Harddisk Drive", "E. Register Cache Internal"], kun_pgk: "A, C, E" },
+                "C2": { materi: "Perangkat Memori Komputer", tp: "Peserta didik mampu memahami peran dan kegunaan memori jangka pendek.", ind: "Disajikan pertanyaan pemantik hardware, peserta didik dapat menjelaskan fungsi strategis memori RAM bagi prosesor.", tipe: "pg", pert: "Perangkat memori utama komputer yang bersifat volatile (data hilang saat aliran listrik mati) Grandma adalah...", pil: ["A. SSD", "B. Harddisk", "C. ROM", "D. RAM", "E. EPROM"], kun: "D", pert_es: "Jelaskan mengapa komputer memerlukan perangkat RAM di samping media penyimpanan permanen seperti Harddisk atau SSD!", kun_es: "Interaksi RAM sebagai penampung data sementara berkecepatan tinggi sebelum diolah unit CPU utama.", pert_pgk: "Pilihlah media penyimpanan data di komputer yang tergolong Non-Volatile (data tidak hilang saat komputer mati)!", pil_pgk: ["A. RAM", "B. SSD", "C. Cache Memory", "D. Flashdisk", "E. NVMe M.2 Drive"], kun_pgk: "B, D, E" },
+                "C3": { materi: "Siklus Instruksi CPU", tp: "Peserta didik mampu menguraikan tahapan siklus kerja eksekusi komputer.", ind: "Disajikan alur data instruksi, peserta didik dapat mengaplikasikan tahapan eksekusi Fetch-Decode-Execute.", tipe: "pg", pert: "Urutan siklus instruksi kerja yang benar pada komponen unit pemroses pusat (CPU) komputer adalah...", pil: ["A. Decode - Fetch - Execute", "B. Fetch - Decode - Execute", "C. Execute - Decode - Fetch", "D. Fetch - Execute - Decode", "E. Store - Fetch - Decode"], kun: "B", pert_es: "Bagaimana cara kerja CPU komputer saat mengaplikasikan siklus pemrosesan data instruksi dasar Fetch-Decode-Execute?", kun_es: "Fetch: mengambil data dari memori RAM, Decode: menerjemahkan kode instruksi, Execute: memproses perhitungan data di unit ALU.", pert_pgk: "Pilihlah tahapan utama yang membentuk siklus kerja pemrosesan instruksi mikro dasar di dalam unit prosesor komputer!", pil_pgk: ["A. Fetching data instruksi", "B. Compiling script", "C. Decoding kode operasi", "D. Overclocking core", "E. Executing perhitungan di ALU"], kun_pgk: "A, C, E" },
+                "C4": { materi: "Optimasi Perangkat Keras", tp: "Peserta didik mampu menganalisis penyebab penurunan performa (bottleneck) komputer.", ind: "Disajikan problem kegagalan multi-tasking lab sekolah, peserta didik dapat menganalisis malfungsi hardware pemicu lag.", tipe: "pg", pert: "Kondisi penurunan performa komputer akibat ketidakseimbangan spesifikasi kecepatan antarkomponen disebut...", pil: ["A. Overclocking", "B. Bottleneck", "C. Defragmenting", "D. Rendering", "E. Thermal Throttling"], kun: "B", pert_es: "Sebuah komputer di lab sekolah mengalami lag parah saat membuka banyak aplikasi secara bersamaan. Lakukan analisis komponen perangkat keras mana yang menjadi penyebab utama!", kun_es: "Penyebab utamanya adalah kapasitas memori RAM yang penuh (overload), sehingga sistem memaksa memakai virtual memory pada storage yang kecepatannya jauh lebih lambat.", pert_pgk: "Komputer multimedia Anda mengalami penurunan performa (bottleneck) akut saat rendering video 4K. Komponen hardware apa yang berpotensi memicu masalah tersebut?", pil_pgk: ["A. Prosesor berkecepatan rendah", "B. Kapasitas GPU/VRAM tidak memadai", "C. Casing komputer kurang kipas RGB", "D. Kapasitas daya Keyboard kurang besar", "E. Kecepatan baca/tulis Storage terlalu lambat"], kun_pgk: "A, B, E" },
+                "C5": { materi: "Sistem Keamanan", tp: "Peserta didik mampu mengevaluasi keamanan sistem komputer.", ind: "Peserta didik dapat mengevaluasi ancaman malware pada OS.", tipe: "pg", pert: "Ancaman siber yang menginfeksi sistem operasi untuk mencuri data rahasia disebut...", pil: ["A. Firewall", "B. Antivirus", "C. Malware", "D. Router", "E. Switch"], kun: "C", pert_es: "Bagaimana mengevaluasi keamanan OS dari ancaman trojan?", kun_es: "Melakukan monitoring task manager secara berkala dan membatasi izin akses aplikasi asing.", pert_pgk: "Manakah indikator teknis di bawah ini yang mengindikasikan bahwa sistem operasi Anda kemungkinan telah terinfeksi oleh malware tersembunyi?", pil_pgk: ["A. Penggunaan CPU melonjak 100% tanpa aplikasi aktif", "B. Koneksi internet mengirim data asing secara konstan", "C. Resolusi monitor otomatis berganti format HD", "D. Tombol klik kanan mouse tidak berfungsi di desktop", "E. Muncul proses misterius asing pada Task Manager"], kun_pgk: "A, B, E" },
+                "C6": { materi: "Perancangan Jaringan Lab", tp: "Peserta didik mampu merancang interkoneksi hardware komputer.", ind: "Siswa mampu menyusun skema topologi jaringan lokal komputer.", tipe: "pg", pert: "Topologi jaringan yang menggunakan hub/switch pusat sebagai terminal distribusi data adalah...", pil: ["A. Bus", "B. Star", "C. Ring", "D. Mesh", "E. Tree"], kun: "B", pert_es: "Rancanglah susunan interkoneksi hardware sederhana untuk lab komputer sekolah berkapasitas 20 client!", kun_es: "Menghubungkan 20 PC client ke Switch utama berkecepatan tinggi menggunakan kabel UTP Cat6, yang dikoneksikan langsung ke router gerbang internet.", pert_pgk: "Anda ditugaskan mendesain topologi jaringan Lab Komputer yang memiliki fault tolerance tinggi (jika satu kabel putus, jaringan tidak mati). Topologi mana yang paling layak dipilih?", pil_pgk: ["A. Topologi Star", "B. Topologi Bus Klasik", "C. Topologi Mesh Penuh", "D. Topologi Ring Tunggal", "E. Topologi Hybrid Mesh-Star"], kun_pgk: "A, C, E" }
+            }
+        };
+
+        function startApp() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('main-header').classList.remove('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            updateIdentitasSekolah();
+        }
+
+        function formatTanggalIndonesia(dateString) {
+            if (!dateString) return "Tobelo, __________";
+            const opsiBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const komponen = dateString.split("-");
+            if (komponen.length !== 3) return dateString;
+            return `Tobelo, ${parseInt(komponen[2])} ${opsiBulan[parseInt(komponen[1]) - 1]} ${komponen[0]}`;
+        }
+
+        function updateIdentitasSekolah() {
+            const namaSekolah = document.getElementById('input-nama-sekolah').value || "NAMA SATUAN PENDIDIKAN";
+            const alamatSekolah = document.getElementById('input-alamat-sekolah').value || "ALAMAT SATUAN PENDIDIKAN";
+            const namaGuru = document.getElementById('input-nama-guru').value || "Nama Guru Pengampu, S.Pd.";
+            const nipGuru = document.getElementById('input-nip-guru').value || "________________________";
+            const rawTanggal = document.getElementById('input-tanggal-buat').value;
+            
+            const tanggalIndonesia = formatTanggalIndonesia(rawTanggal);
+            
+            document.getElementById('render-sekolah-soal').innerText = namaSekolah;
+            document.getElementById('render-alamat-soal').innerText = alamatSekolah;
+            
+            document.getElementById('render-sekolah-kisi').innerText = namaSekolah;
+            document.getElementById('render-alamat-kisi').innerText = alamatSekolah;
+            document.getElementById('render-nama-guru-kisi').innerText = namaGuru;
+            document.getElementById('render-nip-guru-kisi').innerText = nipGuru;
+            document.getElementById('render-tanggal-kisi').innerText = tanggalIndonesia;
+        }
+
+        function switchTab(target) { 
+            const tabs = {
+                'asesmen': document.getElementById('tab-asesmen-content'),
+                'modul': document.getElementById('tab-modul-content'),
+                'input-soal': document.getElementById('tab-input-soal-content')
+            };
+
+            Object.keys(tabs).forEach(key => {
+                if(tabs[key]) {
+                    if (key === target) tabs[key].classList.remove('hidden');
+                    else tabs[key].classList.add('hidden');
+                }
+                
+                const btn = document.getElementById(`nav-btn-${key}`);
+                if(btn) {
+                    if(key === target) btn.className = "flex-1 md:flex-none whitespace-nowrap px-3 md:px-4 py-2 rounded-md font-bold text-xs md:text-sm bg-slate-950 text-orange-500 shadow";
+                    else btn.className = "flex-1 md:flex-none whitespace-nowrap px-3 md:px-4 py-2 rounded-md font-bold text-xs md:text-sm text-orange-100 hover:text-white";
+                }
+            });
+
+            showToast(`Pindah panel ke ${target}`); 
+        }
+
+        function switchPreviewTab(target) {
+            const views = {
+                'soal': document.getElementById('paper-soal-view'),
+                'kisi': document.getElementById('paper-kisi-view'),
+                'kunci': document.getElementById('paper-kunci-view')
+            };
+
+            Object.keys(views).forEach(t => {
+                const btn = document.getElementById(`preview-tab-${t}`);
+                if(btn) {
+                    btn.className = (t === target) ? "flex-1 sm:flex-none text-center whitespace-nowrap px-3 py-2 rounded-md font-semibold text-xs bg-slate-800 text-white" : "flex-1 sm:flex-none text-center whitespace-nowrap px-3 py-2 rounded-md font-semibold text-xs text-slate-400";
+                }
+                if(views[t]) {
+                    views[t].style.display = (t === target) ? 'block' : 'none';
+                }
+            });
+            updateIdentitasSekolah();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-[-100px]', 'opacity-0'), 2500);
+        }
+
+        let activeExamQuestions = [];
+
+        function prosesMulaiBuatSoal() {
+            const fTipe = document.getElementById('filter-tipe').value;
+            const targetPG = parseInt(document.getElementById('filter-jumlah-pg').value) || 0;
+            const targetPGK = parseInt(document.getElementById('filter-jumlah-pgk').value) || 0;
+            const targetEssay = parseInt(document.getElementById('filter-jumlah-essay').value) || 0;
+
+            const checkedElements = Array.from(document.querySelectorAll('input[name="f-elemen"]:checked')).map(cb => cb.value);
+            const checkedLevels = Array.from(document.querySelectorAll('input[name="f-level"]:checked')).map(cb => cb.value);
+
+            if (checkedElements.length === 0) { showToast("Pilih minimal satu elemen pembelajaran!"); return; }
+            if (checkedLevels.length === 0) { showToast("Pilih minimal satu tingkat kesukaran C1-C6!"); return; }
+
+            let poolPG = [];
+            let poolPGK = [];
+            let poolEssay = [];
+
+            // 1. Pemrosesan Pilihan Ganda Tunggal
+            if (fTipe === 'pg' || fTipe === 'semua') {
+                for (let i = 0; i < targetPG; i++) {
+                    let elTarget = checkedElements[i % checkedElements.length];
+                    let lvlTarget = checkedLevels[i % checkedLevels.length];
+                    let masterElemen = blueprintBloom[elTarget] || blueprintBloom["Berpikir Komputasional"];
+                    let template = masterElemen[lvlTarget] || masterElemen["C2"] || Object.values(masterElemen)[0];
+
+                    poolPG.push({
+                        id: `GEN-PG-${i+1}`,
+                        elemen: elTarget,
+                        materi: template.materi || "Umum",
+                        tp: template.tp || "Materi Umum Capaian Kurikulum",
+                        indikator: template.ind || "Peserta didik memahami konsep dasar.",
+                        tipe: "pg",
+                        level: lvlTarget,
+                        pertanyaan: template.pert || "Pertanyaan sistem contoh dasar?",
+                        pilihan: template.pil || ["A. Opsi A", "B. Opsi B", "C. Opsi C", "D. Opsi D", "E. Opsi E"],
+                        kunci: template.kunci || "A"
+                    });
+                }
+            }
+
+            // 2. Pemrosesan Pilihan Ganda Kompleks
+            if (fTipe === 'pgk' || fTipe === 'semua') {
+                for (let i = 0; i < targetPGK; i++) {
+                    let elTarget = checkedElements[i % checkedElements.length];
+                    let lvlTarget = checkedLevels[i % checkedLevels.length];
+                    let masterElemen = blueprintBloom[elTarget] || blueprintBloom["Berpikir Komputasional"];
+                    let template = masterElemen[lvlTarget] || masterElemen["C2"] || Object.values(masterElemen)[0];
+
+                    poolPGK.push({
+                        id: `GEN-PGK-${i+1}`,
+                        elemen: elTarget,
+                        materi: template.materi || "Umum",
+                        tp: template.tp || "Materi Ujian Berbasis Kompleksitas Analitis",
+                        indikator: (template.ind || "Peserta didik menganalisis multi-variabel.") + " (Kompleks)",
+                        tipe: "pgk",
+                        level: lvlTarget,
+                        pertanyaan: template.pert_pgk || "Berikan analisis multi-opsi pada konsep digital kurikulum merdeka berikut ini?",
+                        pilihan: template.pil_pgk || ["A. Opsi A Kompleks", "B. Opsi B Kompleks", "C. Opsi C Kompleks", "D. Opsi D Kompleks", "E. Opsi E Kompleks"],
+                        kunci: template.kun_pgk || "A, C"
+                    });
+                }
+            }
+
+            // 3. Pemrosesan Soal Essay
+            if (fTipe === 'essay' || fTipe === 'semua') {
+                for (let i = 0; i < targetEssay; i++) {
+                    let elTarget = checkedElements[i % checkedElements.length];
+                    let lvlTarget = checkedLevels[i % checkedLevels.length];
+                    let masterElemen = blueprintBloom[elTarget] || blueprintBloom["Berpikir Komputasional"];
+                    let template = masterElemen[lvlTarget] || masterElemen["C2"] || Object.values(masterElemen)[0];
+
+                    poolEssay.push({
+                        id: `GEN-ES-${i+1}`,
+                        elemen: elTarget,
+                        materi: template.materi || "Umum",
+                        tp: template.tp || "Materi Umum Uraian Esensial",
+                        indikator: (template.ind || "Peserta didik menjabarkan konsep logika.") + " (Uraian)",
+                        tipe: "essay",
+                        level: lvlTarget,
+                        pertanyaan: template.pert_es || "Tuliskan penjelasan esensial topik Kurmer ini?",
+                        kunci: template.kun_es || "Jawaban esensial komputasi."
+                    });
+                }
+            }
+
+            if (fTipe === 'pg') {
+                activeExamQuestions = poolPG;
+            } else if (fTipe === 'pgk') {
+                activeExamQuestions = poolPGK;
+            } else if (fTipe === 'essay') {
+                activeExamQuestions = poolEssay;
+            } else {
+                activeExamQuestions = [...poolPG, ...poolPGK, ...poolEssay];
+            }
+
+            renderLembarUjian();
+            renderTabelKisi();
+            renderKunciJawaban();
+            
+            updateIdentitasSekolah();
+            showToast(`Sukses memproses ${activeExamQuestions.length} soal ujian kurikulum merdeka!`);
+        }
+
+        function renderLembarUjian() {
+            let html = "<div class='text-black space-y-6'>";
+            
+            let listPG = activeExamQuestions.filter(s => s.tipe === 'pg');
+            let listPGK = activeExamQuestions.filter(s => s.tipe === 'pgk');
+            let listES = activeExamQuestions.filter(s => s.tipe === 'essay');
+
+            if (listPG.length > 0) {
+                let nNoPG = 1;
+                html += `<div class="mb-4">
+                    <div class="border-b border-black pb-0.5 mb-3 inline-block">
+                        <h4 class="font-extrabold text-sm uppercase m-0">BAGIAN I: PILIHAN GANDA TUNGGAL</h4>
+                    </div>
+                    <p class="text-[11px] italic mb-4">Petunjuk: Pilihlah salah satu opsi jawaban A, B, C, D, atau E yang paling tepat!</p>
+                    <div class="space-y-4">`;
+                listPG.forEach(s => {
+                    html += `<div>
+                        <p class="font-medium text-sm"><span class="font-bold">${nNoPG}.</span> ${s.pertanyaan}</p>
+                        <ul class="pl-5 text-xs space-y-1 mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                            ${s.pilihan.map(p => `<li>${p}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                    nNoPG++;
+                });
+                html += `</div></div>`;
+            }
+
+            if (listPGK.length > 0) {
+                let nNoPGK = 1;
+                html += `<div class="pt-4">
+                    <div class="border-b border-black pb-0.5 mb-3 inline-block">
+                        <h4 class="font-extrabold text-sm uppercase m-0">BAGIAN II: PILIHAN GANDA KOMPLEKS (MODEL TKA)</h4>
+                    </div>
+                    <p class="text-[11px] italic mb-4">Petunjuk: Pilihlah **SEMUA** opsi jawaban benar dengan memberi tanda centang pada kotak jawaban yang tersedia (Jawaban benar bisa lebih dari satu dari opsi A sampai E)!</p>
+                    <div class="space-y-5">`;
+                listPGK.forEach(s => {
+                    html += `<div>
+                        <p class="font-medium text-sm"><span class="font-bold">${nNoPGK}.</span> ${s.pertanyaan} <span class="text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-bold print:hidden">[PG-Kompleks]</span></p>
+                        <ul class="pl-5 text-xs space-y-1 mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                            ${s.pilihan.map(p => `<li>[ ] ${p}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                    nNoPGK++;
+                });
+                html += `</div></div>`;
+            }
+
+            if (listES.length > 0) {
+                let nNoES = 1;
+                html += `<div class="pt-4">
+                    <div class="border-b border-black pb-0.5 mb-3 inline-block">
+                        <h4 class="font-extrabold text-sm uppercase m-0">BAGIAN III: ESSAY / URAIAN</h4>
+                    </div>
+                    <p class="text-[11px] italic mb-4">Petunjuk: Jawablah pertanyaan di bawah ini dengan uraian yang logis dan benar!</p>
+                    <div class="space-y-6">`;
+                listES.forEach(s => {
+                    html += `<div>
+                        <p class="font-medium text-sm"><span class="font-bold">${nNoES}.</span> ${s.pertanyaan}</p>
+                        <div class="border-b border-dashed border-slate-300 h-8 w-full print:block hidden mt-4"></div>
+                        <div class="border-b border-dashed border-slate-300 h-8 w-full print:block hidden mt-2"></div>
+                    </div>`;
+                    nNoES++;
+                });
+                html += `</div></div>`;
+            }
+
+            html += "</div>";
+            document.getElementById('lembar-soal-render').innerHTML = html;
+        }
+
+        function renderTabelKisi() {
+            let html = "";
+            let counterPG = 1;
+            let counterPGK = 1;
+            let counterES = 1;
+
+            activeExamQuestions.forEach((s) => {
+                let txtBentuk = "PG Tunggal";
+                let displayNo = 1;
+
+                if (s.tipe === "pg") {
+                    txtBentuk = "PG Tunggal (A-E)";
+                    displayNo = `I.${counterPG}`;
+                    counterPG++;
+                } else if (s.tipe === "pgk") {
+                    txtBentuk = "PG Kompleks (A-E)";
+                    displayNo = `II.${counterPGK}`;
+                    counterPGK++;
+                } else if (s.tipe === "essay") {
+                    txtBentuk = "Uraian / Essay";
+                    displayNo = `III.${counterES}`;
+                    counterES++;
+                }
+
+                html += `<tr class='text-black text-[11px]'>
+                    <td class='border border-black p-2 text-center font-bold'>${displayNo}</td>
+                    <td class='border border-black p-2 font-semibold text-slate-700'>${s.elemen}</td>
+                    <td class='border border-black p-2 leading-relaxed'>${s.tp}</td>
+                    <td class='border border-black p-2 bg-slate-50/50 font-medium text-slate-800'>${s.materi || "Umum"}</td>
+                    <td class='border border-black p-2 italic leading-relaxed'>${s.indikator}</td>
+                    <td class='border border-black p-2 text-center font-bold text-orange-700 bg-orange-50/20'>${s.level}</td>
+                    <td class='border border-black p-2 text-center font-medium'>${txtBentuk}</td>
+                </tr>`;
+            });
+            document.getElementById('tabel-kisi-render').innerHTML = html || "<tr><td colspan='7' class='text-center py-4 text-slate-400'>Belum ada data. Silakan generate paket soal.</td></tr>";
+        }
+
+        function renderKunciJawaban() {
+            let html = "<div class='space-y-4 text-black text-xs'>";
+            let counterPG = 1;
+            let counterPGK = 1;
+            let counterES = 1;
+
+            activeExamQuestions.forEach((s) => {
+                let badgeTipe = s.tipe.toUpperCase();
+                let displayNo = 1;
+
+                if (s.tipe === "pg") {
+                    badgeTipe = "PG TUNGGAL (A-E)";
+                    displayNo = `I.${counterPG}`;
+                    counterPG++;
+                } else if (s.tipe === "pgk") {
+                    badgeTipe = "PG-KOMPLEKS (A-E MULTI OPTI)";
+                    displayNo = `II.${counterPGK}`;
+                    counterPGK++;
+                } else if (s.tipe === "essay") {
+                    badgeTipe = "ESSAY / URAIAN";
+                    displayNo = `III.${counterES}`;
+                    counterES++;
+                }
+
+                html += `<div>
+                    <span class='font-bold text-slate-700 block'>Nomor ${displayNo} [Kunci Rubrik ${s.elemen} - ${badgeTipe} - ${s.level}]:</span>
+                    <p class='bg-slate-50 p-2 border border-slate-200 rounded mt-1 font-mono text-slate-800 w-full whitespace-pre-wrap font-bold text-orange-700'>${s.kunci}</p>
+                </div>`;
+            });
+            html += "</div>";
+            document.getElementById('lembar-kunci-render').innerHTML = html;
+        }
+
+        function cetakSoalPDF() {
+            if (activeExamQuestions.length === 0) { showToast("Generate soal terlebih dahulu!"); return; }
+            switchPreviewTab('soal');
+            document.body.className = "print-soal-only"; 
+            window.print();
+        }
+
+        function cetakKisiPDF() {
+            if (activeExamQuestions.length === 0) { showToast("Generate soal terlebih dahulu!"); return; }
+            
+            switchPreviewTab('kisi');
+            updateIdentitasSekolah();
+            
+            const kontenCetak = document.getElementById('kisi-printable-area').innerHTML;
+            const layarCetak = window.open('', '_blank', 'height=900,width=1100');
+            
+            layarCetak.document.write('<html><head><title>Cetak Kisi-Kisi Asesmen</title>');
+            layarCetak.document.write('<style>');
+            layarCetak.document.write('body { font-family: "Tahoma", sans-serif; padding: 10px; color: #000; background: #fff; display: block !important; }');
+            layarCetak.document.write('table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; table-layout: fixed; page-break-inside: auto !important; }');
+            layarCetak.document.write('th, td { border: 1px solid black; padding: 6px; text-align: left; word-wrap: break-word; }');
+            layarCetak.document.write('th { background-color: #f3f4f6; font-weight: bold; text-align: center; }');
+            layarCetak.document.write('tr { page-break-inside: avoid !important; break-inside: avoid !important; page-break-after: auto !important; }');
+            layarCetak.document.write('thead { display: table-header-group !important; }');
+            layarCetak.document.write('.container-ttd { page-break-inside: avoid !important; break-inside: avoid !important; display: block !important; width: 100% !important; margin-top: 35px !important; }');
+            layarCetak.document.write('</style></head><body>');
+            layarCetak.document.write(kontenCetak);
+            layarCetak.document.write('</body></html>');
+            
+            layarCetak.document.close();
+            layarCetak.focus();
+            
+            setTimeout(function() {
+                layarCetak.print();
+                layarCetak.close();
+            }, 600);
+        }
+
+        function cetakKunciPDF() {
+            if (activeExamQuestions.length === 0) { showToast("Generate soal terlebih dahulu!"); return; }
+            switchPreviewTab('kunci');
+            document.body.className = "print-kunci-only";
+            window.print();
+        }
+
+        window.onafterprint = function() { 
+            document.body.className = "bg-slate-950 text-slate-100 min-h-screen relative overflow-x-hidden"; 
+        };
+    </script>
+</body>
+</html>
